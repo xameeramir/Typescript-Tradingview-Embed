@@ -1,0 +1,12 @@
+{
+  "name": "mongodb-utility",
+  "version": "1.0.0",
+  "description": "Utility functions for MongoDB Atlas for node.js",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc && node dist/index.js"
+  },
+  "author": "Zameer Ansari <zameeramir@gmail.com> (https://nordible.com)",
+  "license": "ISC"
+}

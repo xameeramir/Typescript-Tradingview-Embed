@@ -1,0 +1,1 @@
+console.log('Typescript boiler plate is working!');
