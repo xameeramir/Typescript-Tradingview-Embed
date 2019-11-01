@@ -5,10 +5,9 @@ Extremely basic skeleton code of a Node.js Typescript project with Lint support
 [Open a new PR](https://github.com/nordible/typescript-boilerplate/pulls) here on GitHub.
 
 ## Run locally
-- `git clone` this project
-- `cd` to this project
-- Run `npm i` to install npm dependencies
-- Run `npm dev` to start the project on local machine
+- Run `git clone https://github.com/nordible/typescript-boilerplate.git` this project
+- Run `cd typescript-boilerplate/` to this project
+- Run `npm run dev` to start the project on local machine
 
 ## Bugs and Issues
 
