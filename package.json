@@ -1,12 +1,40 @@
 {
-  "name": "typescript-boilerplate",
+  "name": "react-typescript-tradingview-embed",
   "version": "1.0.0",
-  "description": "Extremely basic template of a Typescript project",
+  "description": "React Typescript Component for TradingView Embeds",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "babel ./src --out-dir ./dist -s inline",
     "dev": "tsc && node dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nordible/react-typescript-tradingview-embed.git"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "tradingview",
+    "embeds",
+    "widgets"
+  ],
   "author": "Nordible <info@nordible.com> (https://nordible.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nordible/react-typescript-tradingview-embed/issues"
+  },
+  "homepage": "https://github.com/nordible/react-typescript-tradingview-embed#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-react": "^7.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.10.1"
+  },
+  "files": [
+    "dist/*"
+  ]
 }

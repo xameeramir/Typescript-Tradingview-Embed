@@ -1,1 +1,3 @@
-console.log('Typescript boiler plate is working!');
+import { TradingViewEmbed, widgetType } from "./TradingViewEmbed";
+
+export { TradingViewEmbed, widgetType };
