@@ -1,4 +1,4 @@
-# react-typescript-tradingview-embed
+# React-Typescript-Tradingview-Embed
 React Typescript component for [TradingView Embeds](https://www.tradingview.com/widget/)
 <br />
 
@@ -9,8 +9,9 @@ or<br />
 <br />
 
 ### Example
-App.js
-```javascript
+App.js / App.ts
+
+```
 import React from 'react';
 
 import { TradingViewEmbed, widgetType } from "react-typescript-tradingview-embed";
@@ -77,16 +78,16 @@ The above code running:
 
 ## Contributions welcome!
 
-[Open a new PR](https://github.com/nordible/typescript-boilerplate/pulls) here on GitHub.
+[Open a new PR](https://github.com/nordible/React-Typescript-Tradingview-Embed/pulls) here on GitHub.
 
 ## Run locally
-- Run `git clone https://github.com/nordible/typescript-boilerplate.git` this project
-- Run `cd typescript-boilerplate/` to this project
+- Run `git clone https://github.com/nordible/React-Typescript-Tradingview-Embed.git` this project
+- Run `cd React-Typescript-Tradingview-Embed/` to this project
 - Run `npm run dev` to start the project on local machine
 
 ## Bugs and Issues
 
-Have a bug or an issue? [Open a new issue](https://github.com/nordible/typescript-boilerplate/issues) here on GitHub.
+Have a bug or an issue? [Open a new issue](https://github.com/nordible/React-Typescript-Tradingview-Embed/issues) here on GitHub.
 
 ## License
 
