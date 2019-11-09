@@ -1,6 +1,6 @@
 {
   "name": "react-typescript-tradingview-embed",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React Typescript Component for TradingView Embeds",
   "main": "dist/index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/nordible/react-typescript-tradingview-embed/issues"
   },
-  "homepage": "https://github.com/nordible/react-typescript-tradingview-embed#readme",
+  "homepage": "https://nordible.com/React-Typescript-Tradingview-Embed/",
   "devDependencies": {
     "@babel/cli": "^7.6.2",
     "@babel/core": "^7.6.2",
