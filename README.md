@@ -93,6 +93,10 @@ Have a bug or an issue? [Open a new issue](https://github.com/nordible/React-Typ
 
 Code licensed under [MIT](https://opensource.org/licenses/MIT). Everything else is [CC](http://creativecommons.org/)
 
+## Credits
+
+Thanks to [@xnr-k](https://github.com/xnr-k/react-tradingview-embed)
+
 ## Follow us
 
 * [twitter.com/nordiblehq](https://twitter.com/nordiblehq)
