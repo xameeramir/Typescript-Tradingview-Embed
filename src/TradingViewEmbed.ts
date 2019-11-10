@@ -1,8 +1,73 @@
-import React from "react";
-import { PropTypes } from "prop-types";
+import React, { ReactNode } from "react";
+import * as PropTypes from 'prop-types';
 
+class TradingViewEmbed extends React.Component {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      widget: {
+        id: `${props.widgetType}_1`,
+        html: null,
+      }
+    };
+  }
 
-const WIDGET_LINKS = {
+  componentDidMount() {
+    this.setEmbed();
+  }
+
+  setEmbed() {
+    // @ts-ignore
+    const widgetType = this.props.widgetType;
+    // @ts-ignore
+    const widgetConfig = this.props.widgetConfig;
+    const elems = document.getElementsByClassName(widgetType);
+    const widgetCount = elems.length + 1;
+    // Add script
+    var script = document.createElement("script");
+    // @ts-ignore
+    script.src = WIDGETS_URLS[this.props.widgetType];    
+    // @ts-ignore
+    var scriptDiv = document.getElementById(this.state.widget.id);    
+    // @ts-ignore
+    scriptDiv.className = widgetType;    
+    // @ts-ignore
+    scriptDiv.append(script);
+    // Build html
+    var html;
+    if (widgetType === "ADVANCED_CHART" || widgetType === "SYMBOL_OVERVIEW") {
+      // @ts-ignore  
+      html = WIDGETS_HTML[widgetType](widgetCount, this.props.copyrightLink);
+      // @ts-ignore    
+      ONLOAD[widgetType](script, widgetCount, widgetConfig);
+    } else {
+      // @ts-ignore    
+      html = WIDGETS_HTML[widgetType](widgetConfig, this.props.copyrightLink);
+    }
+    // Update states
+    // @ts-ignore  
+    let widget = this.state.widget;
+    widget["id"] = `${widgetType}_${widgetCount}`;
+    widget["html"] = html;
+    this.setState({ widget: widget });
+  }
+
+  render(): ReactNode {
+    return (
+    <div 
+    // @ts-ignore
+    id= { this.state.widget.id } dangerouslySetInnerHTML = {{ __html: this.state.widget.html }
+  }
+  style = {{
+  width: "100%",
+    height: "100%",
+        }}
+/>
+    );
+  }
+}
+
+const WIDGET_LINKS: any = {
   "ADVANCED_CHART": ["Chart", "https://www.tradingview.com/symbols/"],
   "COMPANY_PROFILE": ["Profile", "https://www.tradingview.com/symbols/"],
   "ECONOMIC_CALENDAR": ["Economic Calendar", "https://www.tradingview.com/markets/currencies/economic-calendar/"],
@@ -24,7 +89,7 @@ const WIDGET_LINKS = {
 };
 
 
-const WIDGETS_URLS = {
+const WIDGETS_URLS: any = {
   "ADVANCED_CHART": "https://s3.tradingview.com/tv.js",
   "COMPANY_PROFILE": "https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js",
   "ECONOMIC_CALENDAR": "https://s3.tradingview.com/external-embedding/embed-widget-events.js",
@@ -46,17 +111,17 @@ const WIDGETS_URLS = {
 };
 
 
-function buildHtml(widgetType, script=null, id=null, copyrightLink=true) {
+function buildHtml(widgetType: string, script = '', id = '', copyrightLink = true) {
   var baseHtml = "<!-- TradingView Widget BEGIN -->";
   baseHtml += `<div class="tradingview-widget-container">`;
   baseHtml += id ? `<div id="${id}"></div>` : "";
   baseHtml += '<div class="tradingview-widget-container__widget"></div>';
   baseHtml += copyrightLink ? (
-    `<div class="tradingview-widget-copyright">
-      <a href="${WIDGET_LINKS[widgetType][1]}" rel="noopener" target="_blank">
+    `<div class="tradingview-widget-copyright"></div>
+      <!--<a href="${WIDGET_LINKS[widgetType][1]}" rel="noopener" target="_blank">
         <span class="blue-text">${WIDGET_LINKS[widgetType][0]}</span>
       </a> by TradingView
-    </div>`
+      -->`
   ) : ("");
   baseHtml += `<script type="text/javascript" src="${WIDGETS_URLS[widgetType]}" async>`;
   baseHtml += script ? `${script}</script></div>` : "</script></div>";
@@ -65,8 +130,9 @@ function buildHtml(widgetType, script=null, id=null, copyrightLink=true) {
 }
 
 
-function getTradingViewObj(widget="widget") {
+function getTradingViewObj(widget = "widget") {
   /* global TradingView */
+  // @ts-ignore
   return TradingView[widget];
 }
 
@@ -76,10 +142,10 @@ function getTradingViewObj(widget="widget") {
  * Widgets
  */
 // Advanced Chart
-function widgetAdvancedChart(count, copyrightLink) {
+function widgetAdvancedChart(count: string, copyrightLink: boolean) {
   const widgetHtml = buildHtml(
     "ADVANCED_CHART",
-    null,
+    '',
     `tradingview_AC_${count}`,
     copyrightLink
   );
@@ -87,7 +153,7 @@ function widgetAdvancedChart(count, copyrightLink) {
 }
 
 
-function widgetAdvancedChartOnload(script, count, widgetConfig={}) {
+function widgetAdvancedChartOnload(script: string, count: string, widgetConfig = {}) {
   const defaultConfigAdvancedChart = {
     "symbol": "NASDAQ:GOOG",
     "timezone": "Etc/UTC",
@@ -115,7 +181,7 @@ function widgetAdvancedChartOnload(script, count, widgetConfig={}) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigAdvancedChart, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigAdvancedChart, widgetConfig);
   var {
     symbol, timezone, interval, style, toolbar_bg, enable_publishing,
     withdateranges, range, hide_side_toolbar, allow_symbol_change,
@@ -127,14 +193,15 @@ function widgetAdvancedChartOnload(script, count, widgetConfig={}) {
   } = config;
   no_referral_id = referral_id === "" ? true : false;
   const refKey = no_referral_id ? "no_referral_id" : "referral_id";
-  const refId = no_referral_id ? true: referral_id;
+  const refId = no_referral_id ? true : referral_id;
   if (autosize) {
     width = "100%";
     height = "100%";
   }
   // onload
-  script.onload = function() {
-    if (typeof(TradingView) === "undefined") {
+  (<any>script).onload = function () {
+    // @ts-ignore
+    if (typeof (TradingView) === "undefined") {
       return;
     } else {
       const TV = getTradingViewObj();
@@ -164,6 +231,7 @@ function widgetAdvancedChartOnload(script, count, widgetConfig={}) {
         "locale": locale,
         "container_id": `tradingview_AC_${count}`
       };
+      // @ts-ignore
       config[refKey] = refId;
       new TV(config);
     }
@@ -172,7 +240,7 @@ function widgetAdvancedChartOnload(script, count, widgetConfig={}) {
 
 
 // Company Profile
-function widgetCompanyProfile(widgetConfig={}, copyrightLink) {
+function widgetCompanyProfile(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigCompanyProfile = {
     "symbol": "NASDAQ:GOOG",
     "width": 480,
@@ -182,8 +250,8 @@ function widgetCompanyProfile(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigCompanyProfile, widgetConfig);
-  var {symbol, width, height, colorTheme, isTransparent, locale, autosize} = config;
+  const config = (<any>Object).assign(defaultConfigCompanyProfile, widgetConfig);
+  var { symbol, width, height, colorTheme, isTransparent, locale, autosize } = config;
   if (autosize) {
     width = "100%";
     height = "100%";
@@ -198,7 +266,7 @@ function widgetCompanyProfile(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -206,7 +274,7 @@ function widgetCompanyProfile(widgetConfig={}, copyrightLink) {
 
 
 // Economic Calander
-function widgetEconomicCalendar(widgetConfig={}, copyrightLink) {
+function widgetEconomicCalendar(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigEconomicCalendar = {
     "width": 510,
     "height": 600,
@@ -216,7 +284,7 @@ function widgetEconomicCalendar(widgetConfig={}, copyrightLink) {
     "importanceFilter": "-1,0,1",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigEconomicCalendar, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigEconomicCalendar, widgetConfig);
   var {
     width, height, colorTheme, isTransparent, locale, autosize, importanceFilter
   } = config;
@@ -234,7 +302,7 @@ function widgetEconomicCalendar(widgetConfig={}, copyrightLink) {
       "locale": "${locale}",
       "importanceFilter": "${importanceFilter}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -242,7 +310,7 @@ function widgetEconomicCalendar(widgetConfig={}, copyrightLink) {
 
 
 // Forex Cross Rates
-function widgetForexCrossRates(widgetConfig={}, copyrightLink) {
+function widgetForexCrossRates(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigForexCrossRates = {
     "currencies": [
       "EUR",
@@ -260,8 +328,8 @@ function widgetForexCrossRates(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigForexCrossRates, widgetConfig);
-  var {currencies, width, height, locale, autosize} = config;
+  const config = (<any>Object).assign(defaultConfigForexCrossRates, widgetConfig);
+  var { currencies, width, height, locale, autosize } = config;
   if (autosize) {
     width = "100%";
     height = "100%";
@@ -274,7 +342,7 @@ function widgetForexCrossRates(widgetConfig={}, copyrightLink) {
       "height": "${height}",
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -282,7 +350,7 @@ function widgetForexCrossRates(widgetConfig={}, copyrightLink) {
 
 
 // Forex Heatmap
-function widgetForexHeatmap(widgetConfig={}, copyrightLink) {
+function widgetForexHeatmap(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigForexHeatmap = {
     "currencies": [
       "EUR",
@@ -300,8 +368,8 @@ function widgetForexHeatmap(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigForexHeatmap, widgetConfig);
-  var {currencies, width, height, locale, autosize} = config;
+  const config = (<any>Object).assign(defaultConfigForexHeatmap, widgetConfig);
+  var { currencies, width, height, locale, autosize } = config;
   if (autosize) {
     width = "100%";
     height = "100%";
@@ -314,7 +382,7 @@ function widgetForexHeatmap(widgetConfig={}, copyrightLink) {
       "height": "${height}",
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -322,7 +390,7 @@ function widgetForexHeatmap(widgetConfig={}, copyrightLink) {
 
 
 // Fundamental Data
-function widgetFundamentalData(widgetConfig={}, copyrightLink) {
+function widgetFundamentalData(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigFundamentalData = {
     "symbol": "NASDAQ:GOOG",
     "largeChartUrl": "",
@@ -334,7 +402,7 @@ function widgetFundamentalData(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigFundamentalData, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigFundamentalData, widgetConfig);
   var {
     symbol, largeChartUrl, width, height, colorTheme,
     isTransparent, displayMode, locale, autosize
@@ -355,7 +423,7 @@ function widgetFundamentalData(widgetConfig={}, copyrightLink) {
       "displayMode": "${displayMode}",
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -363,7 +431,7 @@ function widgetFundamentalData(widgetConfig={}, copyrightLink) {
 
 
 // Market Data
-function widgetMarketData(widgetConfig={}, copyrightLink) {
+function widgetMarketData(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigMarketData = {
     "symbolsGroups": [
       {
@@ -487,9 +555,9 @@ function widgetMarketData(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigMarketData, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigMarketData, widgetConfig);
   var {
-    symbolsGroups, largeChartUrl, width, height, locale, autosize} = config;
+    symbolsGroups, largeChartUrl, width, height, locale, autosize } = config;
   if (autosize) {
     width = "100%";
     height = "100%";
@@ -503,7 +571,7 @@ function widgetMarketData(widgetConfig={}, copyrightLink) {
       "width": "${width}",
       "height": "${height}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -511,7 +579,7 @@ function widgetMarketData(widgetConfig={}, copyrightLink) {
 
 
 // Market Overview
-function widgetMarketOverview(widgetConfig={}, copyrightLink) {
+function widgetMarketOverview(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigMarketOverview = {
     "tabs": [
       {
@@ -647,7 +715,7 @@ function widgetMarketOverview(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigMarketOverview, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigMarketOverview, widgetConfig);
   var {
     tabs, dateRange, plotLineColorGrowing, plotLineColorFalling,
     gridLineColor, scaleFontColor, belowLineFillColorGrowing,
@@ -679,7 +747,7 @@ function widgetMarketOverview(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -687,7 +755,7 @@ function widgetMarketOverview(widgetConfig={}, copyrightLink) {
 
 
 // Mini Chart
-function widgetMiniChart(widgetConfig={}, copyrightLink) {
+function widgetMiniChart(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigMiniChart = {
     "symbol": "BITMEX:XBTUSD",
     "dateRange": "12m",
@@ -701,7 +769,7 @@ function widgetMiniChart(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigMiniChart, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigMiniChart, widgetConfig);
   var {
     symbol, dateRange, trendLineColor, underLineColor, largeChartUrl,
     width, height, colorTheme, isTransparent, locale, autosize
@@ -728,7 +796,7 @@ function widgetMiniChart(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -736,7 +804,7 @@ function widgetMiniChart(widgetConfig={}, copyrightLink) {
 
 
 // Screener
-function widgetScreener(widgetConfig={}, copyrightLink) {
+function widgetScreener(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigScreener = {
     "defaultColumn": "overview",
     "defaultScreen": "general",
@@ -750,7 +818,7 @@ function widgetScreener(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigScreener, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigScreener, widgetConfig);
   var {
     defaultColumn, defaultScreen, market, showToolbar, largeChartUrl,
     width, height, colorTheme, isTransparent, locale, autosize
@@ -773,7 +841,7 @@ function widgetScreener(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -781,7 +849,7 @@ function widgetScreener(widgetConfig={}, copyrightLink) {
 
 
 // Screener Cryptocurrency
-function widgetScreenerCryptocurrrency(widgetConfig={}, copyrightLink) {
+function widgetScreenerCryptocurrrency(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigScreenerCryptocurrrency = {
     "defaultColumn": "overview",
     "screener_type": "crypto_mkt",
@@ -793,7 +861,7 @@ function widgetScreenerCryptocurrrency(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigScreenerCryptocurrrency, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigScreenerCryptocurrrency, widgetConfig);
   var {
     defaultColumn, screener_type, displayCurrency, width, height, colorTheme,
     isTransparent, locale, autosize
@@ -814,7 +882,7 @@ function widgetScreenerCryptocurrrency(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -822,7 +890,7 @@ function widgetScreenerCryptocurrrency(widgetConfig={}, copyrightLink) {
 
 
 // Symbol Info
-function widgetSymbolInfo(widgetConfig={}, copyrightLink) {
+function widgetSymbolInfo(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigSymbolInfo = {
     "symbol": "BITMEX:XBTUSD",
     "width": 1000,
@@ -830,8 +898,8 @@ function widgetSymbolInfo(widgetConfig={}, copyrightLink) {
     "isTransparent": false,
     "locale": "en"
   };
-  const config = Object.assign(defaultConfigSymbolInfo, widgetConfig);
-  const {symbol, width, colorTheme, isTransparent, locale} = config;
+  const config = (<any>Object).assign(defaultConfigSymbolInfo, widgetConfig);
+  const { symbol, width, colorTheme, isTransparent, locale } = config;
   const widgetHtml = buildHtml(
     "SYMBOL_INFO",
     `{
@@ -841,7 +909,7 @@ function widgetSymbolInfo(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -849,10 +917,10 @@ function widgetSymbolInfo(widgetConfig={}, copyrightLink) {
 
 
 // Symbol Overview
-function widgetSymbolOverview(count, copyrightLink) {
+function widgetSymbolOverview(count: string, copyrightLink: boolean) {
   const widgetHtml = buildHtml(
     "SYMBOL_OVERVIEW",
-    null,
+    '',
     `tradingview_SO_${count}`,
     copyrightLink
   );
@@ -860,7 +928,7 @@ function widgetSymbolOverview(count, copyrightLink) {
 }
 
 
-function widgetSymbolOverviewOnload(script, count, widgetConfig={}) {
+function widgetSymbolOverviewOnload(script: string, count: string, widgetConfig = {}) {
   const defaultConfigSymbolOverview = {
     "symbols": [
       [
@@ -887,7 +955,7 @@ function widgetSymbolOverviewOnload(script, count, widgetConfig={}) {
     "chartOnly": false,
     "autosize": false
   };
-  const config = Object.assign(defaultConfigSymbolOverview, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigSymbolOverview, widgetConfig);
   var {
     symbols, greyText, gridLineColor, fontColor, underLineColor,
     trendLineColor, width, height, locale, chartOnly, autosize
@@ -897,8 +965,9 @@ function widgetSymbolOverviewOnload(script, count, widgetConfig={}) {
     height = "100%";
   }
   // onload
-  script.onload = function() {
-    if (typeof(TradingView) === "undefined") {
+  (<any>script).onload = function () {
+    // @ts-ignore
+    if (typeof (TradingView) === "undefined") {
       return;
     } else {
       const TV = getTradingViewObj("MediumWidget");
@@ -922,7 +991,7 @@ function widgetSymbolOverviewOnload(script, count, widgetConfig={}) {
 
 
 // Stock Market
-function widgetStockMarket(widgetConfig={}, copyrightLink) {
+function widgetStockMarket(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigStockMarket = {
     "dateRange": "12m",
     "exchange": "US",
@@ -941,7 +1010,7 @@ function widgetStockMarket(widgetConfig={}, copyrightLink) {
     "isTransparent": false,
     "locale": "en",
   };
-  const config = Object.assign(defaultConfigStockMarket, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigStockMarket, widgetConfig);
   var {
     dateRange, exchange, plotLineColorGrowing, plotLineColorFalling,
     gridLineColor, scaleFontColor, belowLineFillColorGrowing,
@@ -977,7 +1046,7 @@ function widgetStockMarket(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -985,7 +1054,7 @@ function widgetStockMarket(widgetConfig={}, copyrightLink) {
 
 
 // Technical Analysis
-function widgetTechnicalAnalysis(widgetConfig={}, copyrightLink) {
+function widgetTechnicalAnalysis(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigTechnicalAnalysis = {
     "symbol": "BTCUSD",
     "showIntervalTabs": true,
@@ -998,7 +1067,7 @@ function widgetTechnicalAnalysis(widgetConfig={}, copyrightLink) {
     "locale": "en",
     "autosize": false
   };
-  const config = Object.assign(defaultConfigTechnicalAnalysis, widgetConfig);
+  const config = (<any>Object).assign(defaultConfigTechnicalAnalysis, widgetConfig);
   var {
     symbol, showIntervalTabs, interval, largeChartUrl, width, height,
     colorTheme, isTransparent, locale, autosize,
@@ -1020,7 +1089,7 @@ function widgetTechnicalAnalysis(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -1028,7 +1097,7 @@ function widgetTechnicalAnalysis(widgetConfig={}, copyrightLink) {
 
 
 // Ticker
-function widgetTicker(widgetConfig={}, copyrightLink) {
+function widgetTicker(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigTicker = {
     "symbols": [
       {
@@ -1048,8 +1117,8 @@ function widgetTicker(widgetConfig={}, copyrightLink) {
     "isTransparent": false,
     "locale": "en"
   };
-  const config = Object.assign(defaultConfigTicker, widgetConfig);
-  const {symbols, colorTheme, isTransparent, locale} = config;
+  const config = (<any>Object).assign(defaultConfigTicker, widgetConfig);
+  const { symbols, colorTheme, isTransparent, locale } = config;
   const widgetHtml = buildHtml(
     "TICKER",
     `{
@@ -1058,7 +1127,7 @@ function widgetTicker(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -1066,7 +1135,7 @@ function widgetTicker(widgetConfig={}, copyrightLink) {
 
 
 // Ticker Single
-function widgetTickerSingle(widgetConfig={}, copyrightLink) {
+function widgetTickerSingle(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigTickerSingle = {
     "symbol": "BITMEX:XBTUSD",
     "width": 350,
@@ -1074,8 +1143,8 @@ function widgetTickerSingle(widgetConfig={}, copyrightLink) {
     "isTransparent": false,
     "locale": "en"
   };
-  const config = Object.assign(defaultConfigTickerSingle, widgetConfig);
-  const {symbol, width, colorTheme, isTransparent, locale} = config;
+  const config = (<any>Object).assign(defaultConfigTickerSingle, widgetConfig);
+  const { symbol, width, colorTheme, isTransparent, locale } = config;
   const widgetHtml = buildHtml(
     "TICKER_SINGLE",
     `{
@@ -1085,7 +1154,7 @@ function widgetTickerSingle(widgetConfig={}, copyrightLink) {
       "isTransparent": ${isTransparent},
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -1093,7 +1162,7 @@ function widgetTickerSingle(widgetConfig={}, copyrightLink) {
 
 
 // Ticker Tape
-function widgetTickerTape(widgetConfig={}, copyrightLink) {
+function widgetTickerTape(widgetConfig = {}, copyrightLink: boolean) {
   const defaultConfigTickerTape = {
     "symbols": [
       {
@@ -1114,8 +1183,8 @@ function widgetTickerTape(widgetConfig={}, copyrightLink) {
     "displayMode": "adaptive",
     "locale": "en"
   };
-  const config = Object.assign(defaultConfigTickerTape, widgetConfig);
-  const {symbols, colorTheme, isTransparent, displayMode, locale} = config;
+  const config = (<any>Object).assign(defaultConfigTickerTape, widgetConfig);
+  const { symbols, colorTheme, isTransparent, displayMode, locale } = config;
   const widgetHtml = buildHtml(
     "TICKER_TAPE",
     `{
@@ -1125,7 +1194,7 @@ function widgetTickerTape(widgetConfig={}, copyrightLink) {
       "displayMode": "${displayMode}",
       "locale": "${locale}"
     }`,
-    null,
+    '',
     copyrightLink
   );
   return widgetHtml;
@@ -1185,62 +1254,7 @@ const ONLOAD = {
   "SYMBOL_OVERVIEW": widgetSymbolOverviewOnload
 };
 
-
-class TradingViewEmbed extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      widget: {
-        id: `${props.widgetType}_1`,
-        html: null,
-      }
-    };
-  }
-
-  componentDidMount() {
-    this.setEmbed();
-  }
-
-  setEmbed() {
-    const widgetType = this.props.widgetType;
-    const widgetConfig = this.props.widgetConfig;
-    const elems = document.getElementsByClassName(widgetType);
-    const widgetCount = elems.length + 1;
-    // Add script
-    var script = document.createElement("script");
-    script.src = WIDGETS_URLS[this.props.widgetType];
-    var scriptDiv = document.getElementById(this.state.widget.id);
-    scriptDiv.className = widgetType;
-    scriptDiv.append(script);
-    // Build html
-    var html;
-    if (widgetType === "ADVANCED_CHART" || widgetType === "SYMBOL_OVERVIEW") {
-      html = WIDGETS_HTML[widgetType](widgetCount, this.props.copyrightLink);
-      ONLOAD[widgetType](script, widgetCount, widgetConfig);
-    } else {
-      html = WIDGETS_HTML[widgetType](widgetConfig, this.props.copyrightLink);
-    }
-    // Update states
-    let widget = this.state.widget;
-    widget["id"] = `${widgetType}_${widgetCount}`;
-    widget["html"] = html;
-    this.setState({widget: widget});
-  }
-
-  render() {
-    return (
-      <div
-        id={this.state.widget.id}
-        dangerouslySetInnerHTML={{__html: this.state.widget.html}}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      />
-    );
-  }
-}
-
+// @ts-ignore    
 TradingViewEmbed.propTypes = {
   widgetType: PropTypes.oneOf([
     "ADVANCED_CHART",
