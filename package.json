@@ -1,6 +1,6 @@
 {
   "name": "react-typescript-tradingview-embed",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React Typescript Component for TradingView Embeds",
   "main": "dist/index.js",
   "scripts": {

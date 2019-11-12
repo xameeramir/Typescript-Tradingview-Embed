@@ -1,3 +1,3 @@
-import { TradingViewEmbed, widgetType } from "./TradingViewEmbed";
+import { generateSymbolInfoChart } from "./TradingViewEmbed";
 
-export { TradingViewEmbed, widgetType };
+export { generateSymbolInfoChart };
