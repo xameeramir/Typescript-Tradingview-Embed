@@ -1,4 +1,4 @@
-const generateSymbolInfoChart = (
+const EmbedSymbolInfoChart = (
     elementId: string,
     symbol: string,
     width: string,
@@ -21,4 +21,4 @@ const generateSymbolInfoChart = (
     }
 }
 
-export { generateSymbolInfoChart };
+export { EmbedSymbolInfoChart };

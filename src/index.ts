@@ -1,3 +1,3 @@
-import { generateSymbolInfoChart } from "./TradingViewEmbed";
+import { EmbedSymbolInfoChart } from "./TradingViewEmbed";
 
-export { generateSymbolInfoChart };
+export { EmbedSymbolInfoChart };
