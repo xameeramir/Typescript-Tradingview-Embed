@@ -4,6 +4,7 @@ const EmbedSymbolInfoChart = (
     width: string,
     locale: string,
     colorTheme: string,
+    referral_id: number,
     isTransparent: boolean
 ) => {
     if (document.getElementById(elementId) && document.getElementById(elementId)!.innerHTML === "") {
@@ -15,7 +16,8 @@ const EmbedSymbolInfoChart = (
             width: width,
             locale: locale,
             colorTheme: colorTheme,
-            isTransparent: isTransparent
+            referral_id: referral_id,
+            isTransparent: isTransparent            
         });
         document.getElementById(elementId)!.appendChild(script);
     }
