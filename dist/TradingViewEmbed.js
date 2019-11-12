@@ -15,9 +15,88 @@ var __extends = (this && this.__extends) || (function () {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
-var prop_types_1 = require("prop-types");
+var PropTypes = __importStar(require("prop-types"));
+var TradingViewEmbed = /** @class */ (function (_super) {
+    __extends(TradingViewEmbed, _super);
+    function TradingViewEmbed(props) {
+        var _this = _super.call(this, props) || this;
+        _this.style = {};
+        _this.state = {
+            widget: {
+                id: props.widgetType + "_1",
+                html: null,
+            }
+        };
+        return _this;
+    }
+    TradingViewEmbed.prototype.componentDidMount = function () {
+        this.setEmbed();
+    };
+    TradingViewEmbed.prototype.setEmbed = function () {
+        // @ts-ignore
+        var widgetType = this.props.widgetType;
+        // @ts-ignore
+        var widgetConfig = this.props.widgetConfig;
+        var elems = document.getElementsByClassName(widgetType);
+        var widgetCount = elems.length + 1;
+        // Add script
+        var script = document.createElement("script");
+        // @ts-ignore
+        script.src = WIDGETS_URLS[this.props.widgetType];
+        // @ts-ignore
+        var scriptDiv = document.getElementById(this.state.widget.id);
+        // @ts-ignore
+        scriptDiv.className = widgetType;
+        // @ts-ignore
+        scriptDiv.append(script);
+        // Build html
+        var html;
+        if (widgetType === "ADVANCED_CHART" || widgetType === "SYMBOL_OVERVIEW") {
+            // @ts-ignore  
+            html = WIDGETS_HTML[widgetType](widgetCount, this.props.copyrightLink);
+            // @ts-ignore    
+            ONLOAD[widgetType](script, widgetCount, widgetConfig);
+        }
+        else {
+            // @ts-ignore    
+            html = WIDGETS_HTML[widgetType](widgetConfig, this.props.copyrightLink);
+        }
+        // Update states
+        // @ts-ignore  
+        var widget = this.state.widget;
+        widget["id"] = widgetType + "_" + widgetCount;
+        widget["html"] = html;
+        this.setState({ widget: widget });
+    };
+    TradingViewEmbed.prototype.render = function () {
+        return 
+        // @ts-ignore
+        id = { this: .state.widget.id };
+        dangerouslySetInnerHTML = {};
+        {
+            __html: this.state.widget.html;
+        }
+    };
+    return TradingViewEmbed;
+}(react_1.default.Component));
+exports.TradingViewEmbed = TradingViewEmbed;
+{
+    width: "100%",
+        height;
+    "100%",
+    ;
+}
+/>;
+;
 var WIDGET_LINKS = {
     "ADVANCED_CHART": ["Chart", "https://www.tradingview.com/symbols/"],
     "COMPANY_PROFILE": ["Profile", "https://www.tradingview.com/symbols/"],
@@ -59,14 +138,14 @@ var WIDGETS_URLS = {
     "TICKER_TAPE": "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js",
 };
 function buildHtml(widgetType, script, id, copyrightLink) {
-    if (script === void 0) { script = null; }
-    if (id === void 0) { id = null; }
+    if (script === void 0) { script = ''; }
+    if (id === void 0) { id = ''; }
     if (copyrightLink === void 0) { copyrightLink = true; }
     var baseHtml = "<!-- TradingView Widget BEGIN -->";
     baseHtml += "<div class=\"tradingview-widget-container\">";
     baseHtml += id ? "<div id=\"" + id + "\"></div>" : "";
     baseHtml += '<div class="tradingview-widget-container__widget"></div>';
-    baseHtml += copyrightLink ? ("<div class=\"tradingview-widget-copyright\">\n      <a href=\"" + WIDGET_LINKS[widgetType][1] + "\" rel=\"noopener\" target=\"_blank\">\n        <span class=\"blue-text\">" + WIDGET_LINKS[widgetType][0] + "</span>\n      </a> by TradingView\n    </div>") : ("");
+    baseHtml += copyrightLink ? ("<div class=\"tradingview-widget-copyright\"></div>\n      <!--<a href=\"" + WIDGET_LINKS[widgetType][1] + "\" rel=\"noopener\" target=\"_blank\">\n        <span class=\"blue-text\">" + WIDGET_LINKS[widgetType][0] + "</span>\n      </a> by TradingView\n      -->") : ("");
     baseHtml += "<script type=\"text/javascript\" src=\"" + WIDGETS_URLS[widgetType] + "\" async>";
     baseHtml += script ? script + "</script></div>" : "</script></div>";
     baseHtml += "<!-- TradingView Widget END -->";
@@ -75,6 +154,7 @@ function buildHtml(widgetType, script, id, copyrightLink) {
 function getTradingViewObj(widget) {
     if (widget === void 0) { widget = "widget"; }
     /* global TradingView */
+    // @ts-ignore
     return TradingView[widget];
 }
 /*
@@ -83,7 +163,7 @@ function getTradingViewObj(widget) {
  */
 // Advanced Chart
 function widgetAdvancedChart(count, copyrightLink) {
-    var widgetHtml = buildHtml("ADVANCED_CHART", null, "tradingview_AC_" + count, copyrightLink);
+    var widgetHtml = buildHtml("ADVANCED_CHART", '', "tradingview_AC_" + count, copyrightLink);
     return widgetHtml;
 }
 function widgetAdvancedChartOnload(script, count, widgetConfig) {
@@ -126,6 +206,7 @@ function widgetAdvancedChartOnload(script, count, widgetConfig) {
     }
     // onload
     script.onload = function () {
+        // @ts-ignore
         if (typeof (TradingView) === "undefined") {
             return;
         }
@@ -157,6 +238,7 @@ function widgetAdvancedChartOnload(script, count, widgetConfig) {
                 "locale": locale,
                 "container_id": "tradingview_AC_" + count
             };
+            // @ts-ignore
             config_1[refKey] = refId;
             new TV(config_1);
         }
@@ -180,7 +262,7 @@ function widgetCompanyProfile(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("COMPANY_PROFILE", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("COMPANY_PROFILE", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Economic Calander
@@ -201,7 +283,7 @@ function widgetEconomicCalendar(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("ECONOMIC_CALENDAR", "{\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\",\n      \"importanceFilter\": \"" + importanceFilter + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("ECONOMIC_CALENDAR", "{\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\",\n      \"importanceFilter\": \"" + importanceFilter + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Forex Cross Rates
@@ -230,7 +312,7 @@ function widgetForexCrossRates(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("FOREX_CROSS_RATES", "{\n      \"currencies\": " + JSON.stringify(currencies) + ",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("FOREX_CROSS_RATES", "{\n      \"currencies\": " + JSON.stringify(currencies) + ",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Forex Heatmap
@@ -259,7 +341,7 @@ function widgetForexHeatmap(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("FOREX_HEATMAP", "{\n      \"currencies\": " + JSON.stringify(currencies) + ",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("FOREX_HEATMAP", "{\n      \"currencies\": " + JSON.stringify(currencies) + ",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Fundamental Data
@@ -282,7 +364,7 @@ function widgetFundamentalData(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("FUNDAMENTAL_DATA", "{\n      \"symbol\": \"" + symbol + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"displayMode\": \"" + displayMode + "\",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("FUNDAMENTAL_DATA", "{\n      \"symbol\": \"" + symbol + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"displayMode\": \"" + displayMode + "\",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Market Data
@@ -417,7 +499,7 @@ function widgetMarketData(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("MARKET_DATA", "{\n      \"symbolsGroups\": " + JSON.stringify(symbolsGroups) + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"locale\": \"" + locale + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("MARKET_DATA", "{\n      \"symbolsGroups\": " + JSON.stringify(symbolsGroups) + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"locale\": \"" + locale + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Market Overview
@@ -564,7 +646,7 @@ function widgetMarketOverview(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("MARKET_OVERVIEW", "{\n      \"tabs\": " + JSON.stringify(tabs) + ",\n      \"dateRange\": \"" + dateRange + "\",\n      \"plotLineColorGrowing\": \"" + plotLineColorGrowing + "\",\n      \"plotLineColorFalling\": \"" + plotLineColorFalling + "\",\n      \"gridLineColor\": \"" + gridLineColor + "\",\n      \"scaleFontColor\": \"" + scaleFontColor + "\",\n      \"belowLineFillColorGrowing\": \"" + belowLineFillColorGrowing + "\",\n      \"belowLineFillColorFalling\": \"" + belowLineFillColorFalling + "\",\n      \"symbolActiveColor\": \"" + symbolActiveColor + "\",\n      \"showChart\": " + showChart + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("MARKET_OVERVIEW", "{\n      \"tabs\": " + JSON.stringify(tabs) + ",\n      \"dateRange\": \"" + dateRange + "\",\n      \"plotLineColorGrowing\": \"" + plotLineColorGrowing + "\",\n      \"plotLineColorFalling\": \"" + plotLineColorFalling + "\",\n      \"gridLineColor\": \"" + gridLineColor + "\",\n      \"scaleFontColor\": \"" + scaleFontColor + "\",\n      \"belowLineFillColorGrowing\": \"" + belowLineFillColorGrowing + "\",\n      \"belowLineFillColorFalling\": \"" + belowLineFillColorFalling + "\",\n      \"symbolActiveColor\": \"" + symbolActiveColor + "\",\n      \"showChart\": " + showChart + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Mini Chart
@@ -592,7 +674,7 @@ function widgetMiniChart(widgetConfig, copyrightLink) {
     if (colorTheme === "dark") {
         underLineColor = "rgba(55, 166, 239, 0.15)";
     }
-    var widgetHtml = buildHtml("MINI_CHART", "{\n      \"symbol\": \"" + symbol + "\",\n      \"dateRange\": \"" + dateRange + "\",\n      \"trendLineColor\": \"" + trendLineColor + "\",\n      \"underLineColor\": \"" + underLineColor + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("MINI_CHART", "{\n      \"symbol\": \"" + symbol + "\",\n      \"dateRange\": \"" + dateRange + "\",\n      \"trendLineColor\": \"" + trendLineColor + "\",\n      \"underLineColor\": \"" + underLineColor + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Screener
@@ -617,7 +699,7 @@ function widgetScreener(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("SCREENER", "{\n      \"defaultColumn\": \"" + defaultColumn + "\",\n      \"defaultScreen\": \"" + defaultScreen + "\",\n      \"market\": \"" + market + "\",\n      \"showToolbar\": " + showToolbar + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("SCREENER", "{\n      \"defaultColumn\": \"" + defaultColumn + "\",\n      \"defaultScreen\": \"" + defaultScreen + "\",\n      \"market\": \"" + market + "\",\n      \"showToolbar\": " + showToolbar + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Screener Cryptocurrency
@@ -640,7 +722,7 @@ function widgetScreenerCryptocurrrency(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("SCREENER_CRYPTOCURRENCY", "{\n      \"defaultColumn\": \"" + defaultColumn + "\",\n      \"screener_type\": \"" + screener_type + "\",\n      \"displayCurrency\": \"" + displayCurrency + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("SCREENER_CRYPTOCURRENCY", "{\n      \"defaultColumn\": \"" + defaultColumn + "\",\n      \"screener_type\": \"" + screener_type + "\",\n      \"displayCurrency\": \"" + displayCurrency + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Symbol Info
@@ -655,12 +737,12 @@ function widgetSymbolInfo(widgetConfig, copyrightLink) {
     };
     var config = Object.assign(defaultConfigSymbolInfo, widgetConfig);
     var symbol = config.symbol, width = config.width, colorTheme = config.colorTheme, isTransparent = config.isTransparent, locale = config.locale;
-    var widgetHtml = buildHtml("SYMBOL_INFO", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("SYMBOL_INFO", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Symbol Overview
 function widgetSymbolOverview(count, copyrightLink) {
-    var widgetHtml = buildHtml("SYMBOL_OVERVIEW", null, "tradingview_SO_" + count, copyrightLink);
+    var widgetHtml = buildHtml("SYMBOL_OVERVIEW", '', "tradingview_SO_" + count, copyrightLink);
     return widgetHtml;
 }
 function widgetSymbolOverviewOnload(script, count, widgetConfig) {
@@ -699,6 +781,7 @@ function widgetSymbolOverviewOnload(script, count, widgetConfig) {
     }
     // onload
     script.onload = function () {
+        // @ts-ignore
         if (typeof (TradingView) === "undefined") {
             return;
         }
@@ -753,7 +836,7 @@ function widgetStockMarket(widgetConfig, copyrightLink) {
         plotLineColorFalling = "rgba(25, 118, 210, 1)";
         gridLineColor = "rgba(42, 46, 57, 1)";
     }
-    var widgetHtml = buildHtml("STOCK_MARKET", "{\n      \"dateRange\": \"" + dateRange + "\",\n      \"exchange\": \"" + exchange + "\",\n      \"plotLineColorGrowing\": \"" + plotLineColorGrowing + "\",\n      \"plotLineColorFalling\": \"" + plotLineColorFalling + "\",\n      \"gridLineColor\": \"" + gridLineColor + "\",\n      \"scaleFontColor\": \"" + scaleFontColor + "\",\n      \"belowLineFillColorGrowing\": \"" + belowLineFillColorGrowing + "\",\n      \"belowLineFillColorFalling\": \"" + belowLineFillColorFalling + "\",\n      \"symbolActiveColor\": \"" + symbolActiveColor + "\",\n      \"showChart\": " + showChart + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("STOCK_MARKET", "{\n      \"dateRange\": \"" + dateRange + "\",\n      \"exchange\": \"" + exchange + "\",\n      \"plotLineColorGrowing\": \"" + plotLineColorGrowing + "\",\n      \"plotLineColorFalling\": \"" + plotLineColorFalling + "\",\n      \"gridLineColor\": \"" + gridLineColor + "\",\n      \"scaleFontColor\": \"" + scaleFontColor + "\",\n      \"belowLineFillColorGrowing\": \"" + belowLineFillColorGrowing + "\",\n      \"belowLineFillColorFalling\": \"" + belowLineFillColorFalling + "\",\n      \"symbolActiveColor\": \"" + symbolActiveColor + "\",\n      \"showChart\": " + showChart + ",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Technical Analysis
@@ -777,7 +860,7 @@ function widgetTechnicalAnalysis(widgetConfig, copyrightLink) {
         width = "100%";
         height = "100%";
     }
-    var widgetHtml = buildHtml("TECHNICAL_ANALYSIS", "{\n      \"symbol\": \"" + symbol + "\",\n      \"showIntervalTabs\": " + showIntervalTabs + ",\n      \"interval\": \"" + interval + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("TECHNICAL_ANALYSIS", "{\n      \"symbol\": \"" + symbol + "\",\n      \"showIntervalTabs\": " + showIntervalTabs + ",\n      \"interval\": \"" + interval + "\",\n      \"largeChartUrl\": \"" + largeChartUrl + "\",\n      \"width\": \"" + width + "\",\n      \"height\": \"" + height + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Ticker
@@ -804,7 +887,7 @@ function widgetTicker(widgetConfig, copyrightLink) {
     };
     var config = Object.assign(defaultConfigTicker, widgetConfig);
     var symbols = config.symbols, colorTheme = config.colorTheme, isTransparent = config.isTransparent, locale = config.locale;
-    var widgetHtml = buildHtml("TICKER", "{\n      \"symbols\": " + JSON.stringify(symbols) + ",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("TICKER", "{\n      \"symbols\": " + JSON.stringify(symbols) + ",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Ticker Single
@@ -819,7 +902,7 @@ function widgetTickerSingle(widgetConfig, copyrightLink) {
     };
     var config = Object.assign(defaultConfigTickerSingle, widgetConfig);
     var symbol = config.symbol, width = config.width, colorTheme = config.colorTheme, isTransparent = config.isTransparent, locale = config.locale;
-    var widgetHtml = buildHtml("TICKER_SINGLE", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("TICKER_SINGLE", "{\n      \"symbol\": \"" + symbol + "\",\n      \"width\": \"" + width + "\",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 // Ticker Tape
@@ -847,7 +930,7 @@ function widgetTickerTape(widgetConfig, copyrightLink) {
     };
     var config = Object.assign(defaultConfigTickerTape, widgetConfig);
     var symbols = config.symbols, colorTheme = config.colorTheme, isTransparent = config.isTransparent, displayMode = config.displayMode, locale = config.locale;
-    var widgetHtml = buildHtml("TICKER_TAPE", "{\n      \"symbols\": " + JSON.stringify(symbols) + ",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"displayMode\": \"" + displayMode + "\",\n      \"locale\": \"" + locale + "\"\n    }", null, copyrightLink);
+    var widgetHtml = buildHtml("TICKER_TAPE", "{\n      \"symbols\": " + JSON.stringify(symbols) + ",\n      \"colorTheme\": \"" + colorTheme + "\",\n      \"isTransparent\": " + isTransparent + ",\n      \"displayMode\": \"" + displayMode + "\",\n      \"locale\": \"" + locale + "\"\n    }", '', copyrightLink);
     return widgetHtml;
 }
 /*
@@ -899,68 +982,9 @@ var ONLOAD = {
     "ADVANCED_CHART": widgetAdvancedChartOnload,
     "SYMBOL_OVERVIEW": widgetSymbolOverviewOnload
 };
-var TradingViewEmbed = /** @class */ (function (_super) {
-    __extends(TradingViewEmbed, _super);
-    function TradingViewEmbed(props) {
-        var _this = _super.call(this, props) || this;
-        _this.style = {};
-        _this.state = {
-            widget: {
-                id: props.widgetType + "_1",
-                html: null,
-            }
-        };
-        return _this;
-    }
-    TradingViewEmbed.prototype.componentDidMount = function () {
-        this.setEmbed();
-    };
-    TradingViewEmbed.prototype.setEmbed = function () {
-        var widgetType = this.props.widgetType;
-        var widgetConfig = this.props.widgetConfig;
-        var elems = document.getElementsByClassName(widgetType);
-        var widgetCount = elems.length + 1;
-        // Add script
-        var script = document.createElement("script");
-        script.src = WIDGETS_URLS[this.props.widgetType];
-        var scriptDiv = document.getElementById(this.state.widget.id);
-        scriptDiv.className = widgetType;
-        scriptDiv.append(script);
-        // Build html
-        var html;
-        if (widgetType === "ADVANCED_CHART" || widgetType === "SYMBOL_OVERVIEW") {
-            html = WIDGETS_HTML[widgetType](widgetCount, this.props.copyrightLink);
-            ONLOAD[widgetType](script, widgetCount, widgetConfig);
-        }
-        else {
-            html = WIDGETS_HTML[widgetType](widgetConfig, this.props.copyrightLink);
-        }
-        // Update states
-        var widget = this.state.widget;
-        widget["id"] = widgetType + "_" + widgetCount;
-        widget["html"] = html;
-        this.setState({ widget: widget });
-    };
-    TradingViewEmbed.prototype.render = function () {
-        return id = { this: .state.widget.id };
-        dangerouslySetInnerHTML = {};
-        {
-            __html: this.state.widget.html;
-        }
-    };
-    return TradingViewEmbed;
-}(react_1.default.Component));
-exports.TradingViewEmbed = TradingViewEmbed;
-{
-    width: "100%",
-        height;
-    "100%",
-    ;
-}
-/>;
-;
+// @ts-ignore    
 TradingViewEmbed.propTypes = {
-    widgetType: prop_types_1.PropTypes.oneOf([
+    widgetType: PropTypes.oneOf([
         "ADVANCED_CHART",
         "COMPANY_PROFILE",
         "ECONOMIC_CALENDAR",
@@ -980,7 +1004,7 @@ TradingViewEmbed.propTypes = {
         "TICKER_SINGLE",
         "TICKER_TAPE"
     ]).isRequired,
-    widgetConfig: prop_types_1.PropTypes.object,
-    copyrightLink: prop_types_1.PropTypes.bool
+    widgetConfig: PropTypes.object,
+    copyrightLink: PropTypes.bool
 };
 //# sourceMappingURL=TradingViewEmbed.js.map
