@@ -1,7 +1,7 @@
 {
-  "name": "react-typescript-tradingview-embed",
-  "version": "1.0.8",
-  "description": "React Typescript Component for TradingView Embeds",
+  "name": "typescript-tradingview-embed",
+  "version": "1.0.0",
+  "description": "Typescript Component for TradingView Embeds",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -11,10 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nordible/react-typescript-tradingview-embed.git"
+    "url": "git+https://github.com/nordible/typescript-tradingview-embed.git"
   },
   "keywords": [
     "react",
+    "angular",
     "typescript",
     "tradingview",
     "embeds",
@@ -23,23 +24,10 @@
   "author": "Nordible <info@nordible.com> (https://nordible.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nordible/react-typescript-tradingview-embed/issues"
+    "url": "https://github.com/nordible/typescript-tradingview-embed/issues"
   },
-  "homepage": "https://nordible.com/React-Typescript-Tradingview-Embed/",
-  "devDependencies": {
-    "@babel/cli": "^7.6.2",
-    "@babel/core": "^7.6.2",
-    "@babel/preset-env": "^7.6.2",
-    "@babel/preset-react": "^7.0.0"
-  },
-  "peerDependencies": {
-    "react": "^16.10.1"
-  },
+  "homepage": "https://nordible.com/typescript-tradingview-embed/",
   "files": [
     "dist/*"
-  ],  
-  "dependencies": {
-    "@types/react": "^16.9.11",
-    "react": "^16.11.0"
-  }
+  ]
 }

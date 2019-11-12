@@ -1,20 +1,19 @@
-# React-Typescript-Tradingview-Embed
-React Typescript component for [TradingView Embeds](https://www.tradingview.com/widget/)
+Typescript component for [TradingView Embeds](https://www.tradingview.com/widget/)
 <br />
 
 ### Installation
-`npm install --save react-typescript-tradingview-embed`<br />
+`npm install --save typescript-tradingview-embed`<br />
 or<br />
-`yarn add react-typescript-tradingview-embed`
+`yarn add typescript-tradingview-embed`
 <br />
 
 ### Example
 App.js / App.ts
 
 ```
-import React from 'react';
+TODO: update usage
 
-import { TradingViewEmbed, widgetType } from "react-typescript-tradingview-embed";
+import { TradingViewEmbed, widgetType } from "typescript-tradingview-embed";
 
 
 export default function App() {
@@ -53,10 +52,10 @@ export default function App() {
 Use widgetConfig to declare widget parameters.<br />
 See each [individual widgets](https://www.tradingview.com/widget/) for available parameters.<br />
 The above code running:
-![screen](https://github.com/nordible/react-typescript-tradingview-embed/blob/master/bin/screen.PNG)
+![screen](https://github.com/nordible/typescript-tradingview-embed/blob/master/bin/screen.PNG)
 <br />
 
-**Supported widgets**:
+**Supported widgets in plan**:
   - [x] [ADVANCED_CHART](https://www.tradingview.com/widget/advanced-chart/)
   - [x] [COMPANY_PROFILE](https://www.tradingview.com/widget/symbol-profile/)
   - [x] [ECONOMIC_CALENDAR](https://www.tradingview.com/widget/economic-calendar/)
@@ -78,16 +77,16 @@ The above code running:
 
 ## Contributions welcome!
 
-[Open a new PR](https://github.com/nordible/React-Typescript-Tradingview-Embed/pulls) here on GitHub.
+[Open a new PR](https://github.com/nordible/typescript-tradingview-embed/pulls) here on GitHub.
 
 ## Run locally
-- Run `git clone https://github.com/nordible/React-Typescript-Tradingview-Embed.git` this project
-- Run `cd React-Typescript-Tradingview-Embed/` to this project
+- Run `git clone https://github.com/nordible/typescript-tradingview-embed.git` this project
+- Run `cd typescript-tradingview-embed/` to this project
 - Run `npm run dev` to start the project on local machine
 
 ## Bugs and Issues
 
-Have a bug or an issue? [Open a new issue](https://github.com/nordible/React-Typescript-Tradingview-Embed/issues) here on GitHub.
+Have a bug or an issue? [Open a new issue](https://github.com/nordible/typescript-tradingview-embed/issues) here on GitHub.
 
 ## License
 
